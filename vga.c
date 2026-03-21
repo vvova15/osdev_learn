@@ -1,4 +1,5 @@
 // vga.c
+//инициализация видеорежима взята https://files.osdev.org/mirrors/geezer/osd/graphics/modes.c
 #include <stdint.h>
 
 #define VGA_MEMORY 0xA0000
@@ -103,7 +104,7 @@ void vga_init() {
      inb(0x3DA); outb(0x3C0, 0x20);
 }
 
-// Копирует `n` байт из src в dest
+//TODO убрать в менеджер памяти
 void *memcpy(void *dest, const void *src, unsigned n) {
     uint8_t *d = (uint8_t*)dest;
     const uint8_t *s = (const uint8_t*)src;
