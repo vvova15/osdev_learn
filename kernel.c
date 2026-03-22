@@ -2,7 +2,8 @@
 void idt_init();
 
 void vga_init();
-void draw_red_square(int x,int y,int size);
+
+void pci_scan();
 
 void kernel_main() {
     char *video = (char*)0xB8000;
@@ -15,14 +16,16 @@ void kernel_main() {
     }
  // рисуем красный квадрат 50x50 пикселей в центре
     //draw_red_square(135, 75, 50);
-    vga_init();
-    draw_x();
-    draw_red_square(135, 75, 50);
-  //  idt_init();
-   // timer_init();
-    //kb_init();
+  //  vga_init();
+ //   draw_test_pattern();
 
-    //__asm__ volatile("sti");
+   // idt_init();
+  //  timer_init();
+  //  kb_init();
+
+ //   __asm__ volatile("sti");
+
+    pci_scan();
 
     // вызовем divide by zero
    // int a = 1 / 0;

@@ -1,5 +1,4 @@
-// idt.c
-#include <stdint.h>
+#include "arch/x86/io.h"
 
 struct idt_entry {
     uint16_t offset_low;
@@ -24,17 +23,6 @@ extern void timer_handler();
 
 struct idt_entry idt[256];
 struct idt_ptr idtp;
-
-// Вспомогательные функции для портов
-static inline void outb(uint16_t port, uint8_t value) {
-    __asm__ volatile ("outb %0, %1" : : "a"(value), "Nd"(port));
-}
-
-static inline uint8_t inb(uint16_t port) {
-    uint8_t ret;
-    __asm__ volatile ("inb %1, %0" : "=a"(ret) : "Nd"(port));
-    return ret;
-}
 
 // Настройка IDT
 void idt_set_gate(int n, uint32_t handler) {
@@ -69,41 +57,39 @@ void pic_remap() {
     outb(0x21, 0x01);
     outb(0xA1, 0x01);
 
-    //  замаскировать все IRQ
+    //замаскировать все IRQ
     outb(0x21, 0xff);
     outb(0xA1, 0xff);
 }
 
 // Инициализация IDT и обработчиков
 void idt_init() {
-    // Сначала remap PIC
     pic_remap();
 
-    // Настраиваем прерывания
     idt_set_gate(0, (uint32_t)isr0);   // Divide by zero
-    idt_set_gate(32, (uint32_t)isr32);
+    idt_set_gate(32, (uint32_t)isr32); // таймер
     idt_set_gate(33, (uint32_t)isr33); // Клавиатура IRQ1
 
     idt_load();
 }
-// разрешаем IRQ1 (клавиатура) и/или IRQ0 (таймер), не трогая остальные
+// разрешаем IRQ1 (клавиатура)
 void irq_enable(uint8_t irq_mask) {
-    uint8_t current = inb(0x21); // читаем текущую маску
-    current &= irq_mask;          // обнуляем биты тех IRQ, которые хотим включить
+    uint8_t current = inb(0x21); 
+    current &= irq_mask;
     outb(0x21, current);
 }
 
-// Пример:
+
 void kb_init() {
-    uint8_t mask = inb(0x21);    // текущая маска
-    mask &= ~(1 << 1);           // разрешаем IRQ1
-    outb(0x21, mask);
+    irq_enable(~(1 << 1));
 }
 
 void timer_init() {
-    uint8_t mask = inb(0x21);    // текущая маска
-    mask &= ~(1 << 0);           // разрешаем IRQ0
-    outb(0x21, mask);
+    irq_enable(~(1 << 0));
+}
+
+void pic_send_eoi(){
+    outb(0x20, 0x20);
 }
 
 // Обработчик divide by zero
@@ -121,7 +107,7 @@ void isr0_handler() {
 
 // Обработчик клавиатуры
 void keyboard_handler() {
-    outb(0x20, 0x20);
+
     
     char *video = (char*)0xB8000;
     uint8_t scancode = inb(0x60); // читаем сканкод
@@ -132,7 +118,7 @@ void keyboard_handler() {
     video[2] = '0' + (scancode % 10);
     video[3] = 0x2F;
 
-    // Отправляем EOI (End of Interrupt) Master PIC
+    pic_send_eoi();
 
 }
 
@@ -147,5 +133,5 @@ void timer_handler() {
     video[80*2 + 2] = '0' + (ticks % 10);
     video[80*2 + 3] = 0x0F;
 
-    outb(0x20, 0x20); // EOI
+    pic_send_eoi();
 }

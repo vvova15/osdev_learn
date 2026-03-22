@@ -6,7 +6,7 @@ OBJCOPY=objcopy
 CFLAGS=-ffreestanding -m32 -nostdlib -fno-pic -fno-stack-protector -g -O0 -fno-omit-frame-pointer
 LDFLAGS=-m elf_i386 -T linker.ld
 
-OBJS=kernel.o idt.o isr.o vga.o
+OBJS=kernel.o idt.o isr.o vga.o pci.o
 
 all: os-image
 
@@ -24,6 +24,9 @@ vga.o: vga.c
 
 isr.o: isr.asm
 	$(ASM) -f elf32 isr.asm -o isr.o
+
+pci.o: pci.c
+	$(CC) $(CFLAGS) -c pci.c -o pci.o
 
 kernel.elf: $(OBJS)
 	$(LD) $(LDFLAGS) $(OBJS) -o kernel.elf
