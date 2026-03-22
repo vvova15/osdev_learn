@@ -1,47 +1,10 @@
 #include <stdint.h>
 #include "arch/x86/io.h"
+#include "console.h"
 
 #define PCI_CONFIG_ADDRESS 0xCF8
 #define PCI_CONFIG_DATA    0xCFC
 
-#define VGA_TEXT ((uint16_t*)0xB8000)
-
-static int cursor = 0;
-
-int row = 0;
-int col = 0;
-
-void vga_putc(char c) {
-    if (c == '\n') {
-        row++;
-        col = 0;
-        return;
-    }
-
-    VGA_TEXT[row * 80 + col] = (0x0F << 8) | c;
-    col++;
-
-    if (col >= 80) {
-        col = 0;
-        row++;
-    }
-}
-
-void vga_print(const char* s) {
-    while (*s) vga_putc(*s++);
-}
-
-char hex[] = "0123456789ABCDEF";
-
-void vga_print_hex8(uint8_t val) {
-    vga_putc(hex[(val >> 4) & 0xF]);
-    vga_putc(hex[val & 0xF]);
-}
-
-void vga_print_hex16(uint16_t val) {
-    vga_print_hex8(val >> 8);
-    vga_print_hex8(val & 0xFF);
-}
 
 uint32_t pci_read(uint8_t bus, uint8_t device, uint8_t function, uint8_t offset) {
     uint32_t address =

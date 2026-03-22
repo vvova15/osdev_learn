@@ -1,23 +1,4 @@
-#include <stdint.h>
-#include "arch/x86/io.h"
-
-/* ===================== VGA CONSTANTS ===================== */
-
-#define VGA_WIDTH   320
-#define VGA_HEIGHT  200
-
-#define VGA_GC_INDEX      0x3CE
-#define VGA_GC_DATA       0x3CF
-#define VGA_SEQ_INDEX     0x3C4
-#define VGA_SEQ_DATA      0x3C5
-#define VGA_CRTC_INDEX    0x3D4
-#define VGA_CRTC_DATA     0x3D5
-#define VGA_AC_INDEX      0x3C0
-#define VGA_INPUT_STATUS  0x3DA
-#define VGA_MISC_WRITE    0x3C2
-
-
-
+#include "vga.h"
 /* ===================== VGA HELPERS ===================== */
 
 static void write_register(uint16_t index_port, uint16_t data_port, uint8_t index, uint8_t value) {

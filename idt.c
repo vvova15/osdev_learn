@@ -1,25 +1,5 @@
-#include "arch/x86/io.h"
-
-struct idt_entry {
-    uint16_t offset_low;
-    uint16_t selector;
-    uint8_t zero;
-    uint8_t type_attr;
-    uint16_t offset_high;
-} __attribute__((packed));
-
-struct idt_ptr {
-    uint16_t limit;
-    uint32_t base;
-} __attribute__((packed));
-
-extern void isr0();
-extern void isr32();  // IRQ0 - timer
-extern void isr33(); // IRQ1 - клавиатура
-
-extern void isr0_handler();
-extern void keyboard_handler();
-extern void timer_handler();
+#include "idt.h"
+#include "console.h"
 
 struct idt_entry idt[256];
 struct idt_ptr idtp;
@@ -94,29 +74,19 @@ void pic_send_eoi(){
 
 // Обработчик divide by zero
 void isr0_handler() {
-    char *video = (char*)0xB8000;
-    const char *msg = "DIVIDE BY ZERO!";
 
-    for (int i = 0; msg[i]; i++) {
-        video[i*2] = msg[i];
-        video[i*2 + 1] = 0x4F; // красный на сером
-    }
-
+    vga_clear_screen();
+    vga_reset_cursor();
+    vga_print("DIVIDE BY ZERO!");
     while (1); // останавливаем выполнение
 }
 
 // Обработчик клавиатуры
 void keyboard_handler() {
-
-    
-    char *video = (char*)0xB8000;
     uint8_t scancode = inb(0x60); // читаем сканкод
-
-    // Пишем сканкод в верхний левый угол экрана
-    video[0] = 'K';
-    video[1] = 0x2F;
-    video[2] = '0' + (scancode % 10);
-    video[3] = 0x2F;
+    vga_clear_screen();
+    vga_reset_cursor();
+    vga_print("scan code: "); vga_print_hex8(scancode);
 
     pic_send_eoi();
 
@@ -126,12 +96,12 @@ void timer_handler() {
     static uint32_t ticks = 0;
     ticks++;
 
-    char *video = (char*)0xB8000;
-    // Вторая строка (строка 1, смещение 80 символов)
-    video[80*2 + 0] = 'T';
-    video[80*2 + 1] = 0x0F;
-    video[80*2 + 2] = '0' + (ticks % 10);
-    video[80*2 + 3] = 0x0F;
+    // char *video = (char*)0xB8000;
+    // // Вторая строка (строка 1, смещение 80 символов)
+    // video[80*2 + 0] = 'T';
+    // video[80*2 + 1] = 0x0F;
+    // video[80*2 + 2] = '0' + (ticks % 10);
+    // video[80*2 + 3] = 0x0F;
 
     pic_send_eoi();
 }
