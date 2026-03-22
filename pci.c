@@ -202,9 +202,9 @@ void ata_init() {
 }
 
 void ata_print_devices() {
+    vga_clear_screen();
     for (int i = 0; i < ata_device_count; i++) {
         ata_device_t* d = &ata_devices[i];
-        vga_clear_screen();
         vga_print("ATA device "); vga_print_dec8(i); vga_print("\n");
         vga_print("  model: "); vga_print(d->model); vga_print("\n");
         vga_print("  channel: "); vga_print(d->channel ? "secondary" : "primary"); vga_print("\n");
