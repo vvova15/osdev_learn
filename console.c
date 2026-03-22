@@ -38,7 +38,67 @@ void vga_print_hex16(uint16_t val) {
     vga_print_hex8(val & 0xFF);
 }
 
+void vga_print_hex32(uint32_t val){
+    vga_print_hex16((val >> 16) & 0xFFFF);
+    vga_print_hex16(val & 0xFFFF);
+}
 
+void vga_print_dec8(uint8_t val){
+    if (val == 0) {
+        vga_putc('0');
+        return;
+    }
+
+    char buf[3]; // max 255
+    int i = 0;
+
+    while (val > 0) {
+        buf[i++] = '0' + (val % 10);
+        val /= 10;
+    }
+
+    while (i--) {
+        vga_putc(buf[i]);
+    }
+}
+
+void vga_print_dec16(uint16_t val){
+    if (val == 0) {
+        vga_putc('0');
+        return;
+    }
+
+    char buf[5]; // максимум 65535 -> 5 цифр
+    int i = 0;
+
+    while (val > 0) {
+        buf[i++] = '0' + (val % 10);
+        val /= 10;
+    }
+
+    while (i--) {
+        vga_putc(buf[i]);
+    }
+}
+
+void vga_print_dec32(uint32_t val){
+    if (val == 0) {
+        vga_putc('0');
+        return;
+    }
+
+    char buf[10]; // до 4294967295
+    int i = 0;
+
+    while (val > 0) {
+        buf[i++] = '0' + (val % 10);
+        val /= 10;
+    }
+
+    while (i--) {
+        vga_putc(buf[i]);
+    }
+}
 
 void vga_clear_screen(void) {
     uint16_t blank = (VGA_COLOR << 8) | ' ';

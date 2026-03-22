@@ -12,3 +12,8 @@ void vga_clear_screen();
 void vga_print(const char* s);
 void vga_print_hex8(uint8_t val);
 void vga_print_hex16(uint16_t val);
+void vga_print_hex32(uint32_t val);
+
+void vga_print_dec8(uint8_t val);
+void vga_print_dec16(uint16_t val);
+void vga_print_dec32(uint32_t val);

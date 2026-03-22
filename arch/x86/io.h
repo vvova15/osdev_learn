@@ -36,3 +36,13 @@ static inline uint32_t inl(uint16_t port) {
     __asm__ volatile ("inl %1, %0" : "=a"(value) : "Nd"(port));
     return value;
 }
+
+static inline void insw(uint16_t port, void* addr, uint32_t count) {
+    asm volatile (
+        "cld\n\t"
+        "rep insw"
+        : "+D"(addr), "+c"(count)
+        : "d"(port)
+        : "memory"
+    );
+}

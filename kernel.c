@@ -6,12 +6,12 @@
 
 
 void kernel_main() {
-    vga_clear_screen();
-    vga_print("Hello world!");
+    //vga_clear_screen();
+    //vga_print("Hello world!");
  // рисуем красный квадрат 50x50 пикселей в центре
     //draw_red_square(135, 75, 50);
-    vga_init();
-    draw_test_pattern();
+    //vga_init();
+    //draw_test_pattern();
 
    // idt_init();
    // timer_init();
@@ -19,7 +19,10 @@ void kernel_main() {
 
    // __asm__ volatile("sti");
 
- //   pci_scan();
+    //pci_scan();
+
+     ata_init();
+     ata_print_devices();
 
     // вызовем divide by zero
    // int a = 1 / 0;
