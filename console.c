@@ -13,10 +13,10 @@ void vga_putc(char c) {
         return;
     }
 
-    VGA_TEXT[row * VGA_WIDTH + col] = (0x0F << 8) | c;
+    VGA_TEXT[row * CONSOLE_VGA_WIDTH + col] = (0x0F << 8) | c;
     col++;
 
-    if (col >= VGA_WIDTH) {
+    if (col >= CONSOLE_VGA_WIDTH) {
         col = 0;
         row++;
     }
@@ -103,9 +103,9 @@ void vga_print_dec32(uint32_t val){
 void vga_clear_screen(void) {
     uint16_t blank = (VGA_COLOR << 8) | ' ';
 
-    for (int y = 0; y < VGA_HEIGHT; y++) {
-        for (int x = 0; x < VGA_WIDTH; x++) {
-            VGA_TEXT[y * VGA_WIDTH + x] = blank;
+    for (int y = 0; y < CONSOLE_VGA_HEIGHT; y++) {
+        for (int x = 0; x < CONSOLE_VGA_WIDTH; x++) {
+            VGA_TEXT[y * CONSOLE_VGA_WIDTH + x] = blank;
         }
     }
 

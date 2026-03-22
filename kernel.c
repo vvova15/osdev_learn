@@ -2,7 +2,7 @@
 #include "idt.h"
 #include "vga.h"
 #include "console.h"
-#include "pci.h"
+#include "ata.h"
 
 
 void kernel_main() {
