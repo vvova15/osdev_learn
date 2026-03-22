@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug kernel (gdb)",
+      "type": "gdb",
+      "request": "attach",
+      "target": "localhost:1234",
+      "remote": true,
+      "cwd": "${workspaceFolder}",
+      "executable": "${workspaceFolder}/kernel.elf"
+    }
+  ]
+}
